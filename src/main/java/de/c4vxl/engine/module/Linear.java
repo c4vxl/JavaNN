@@ -35,6 +35,17 @@ public class Linear extends Module {
         }
     }
 
+    /**
+     * Forward pass
+     */
+    public Tensor<Double> forward(Tensor<Double> x) {
+        x = x.matmul(weight);
+
+        if (useBias && this.bias.shape == x.shape)
+            x = x.add(this.bias);
+
+        return x;
+    }
 
     @Override
     public String toString() {
