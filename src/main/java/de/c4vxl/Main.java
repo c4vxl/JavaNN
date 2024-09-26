@@ -6,7 +6,8 @@ public class Main {
     public static void main(String[] args) {
         Tensor<Integer> x = new Tensor<>(Integer.class, 10, 10);
         Tensor<Integer> y = new Tensor<>(Integer.class, 10, 10);
+        System.out.println(x);
 
-        System.out.println(x.matmul(y));
+        System.out.println(x.sum(0));
     }
 }

@@ -6,6 +6,12 @@ import java.util.Arrays;
 import java.util.Random;
 import java.util.function.BiFunction;
 
+/**
+ * A Tensor can be understood as a multidimensional matrix of different datatypes capable of performing various mathematical operations.
+ * These operations include element-wise computation, matrix multiplication, reshaping, transposing, and more.
+ *
+ * @author c4vxl
+ */
 @SuppressWarnings("unchecked")
 public class Tensor<T> {
     // default data type
@@ -196,12 +202,42 @@ public class Tensor<T> {
      * Sum across one dimension
      */
     public Tensor<T> sum(int dim) {
-        if (dim < 0 || dim >= this.shape.length) throw new IllegalArgumentException("Invalid dimension specified.");
-        if (dtype == Boolean.class) throw new RuntimeException("Operation can not be performed on dtype 'Boolean'");
+        if (dim < 0 || dim >= this.shape.length)
+            throw new IllegalArgumentException("Invalid dimension specified.");
+        if (dtype == Boolean.class)
+            throw new RuntimeException("Operation can not be performed on dtype 'Boolean'");
 
-        // TODO: implement
+        // Calculate the new shape after summing over the specified dimension
+        int[] newShape = Arrays.copyOf(this.shape, this.shape.length - 1);
+        for (int i = dim; i < newShape.length; i++) {
+            newShape[i] = this.shape[i + 1];
+        }
 
-        return this;
+        // Prepare the result data array
+        T[] resultData = (T[]) Array.newInstance(dtype, shapeToSize(newShape));
+
+        // Sum elements along the specified dimension
+        int[] indices = new int[this.shape.length];
+        for (int i = 0; i < resultData.length; i++) {
+            T sum = zeroValue();
+            for (indices[dim] = 0; indices[dim] < this.shape[dim]; indices[dim]++) {
+                int index = 0;
+                for (int j = 0; j < this.shape.length; j++) {
+                    index += (j < dim) ? indices[j] : (j == dim) ? 0 : indices[j - 1];
+                    index *= this.shape[j];
+                }
+                sum = operate(sum, data[index], Double::sum);
+            }
+            resultData[i] = sum;
+
+            // Increment indices
+            for (int j = newShape.length - 1; j >= 0; j--) {
+                if (++indices[j] < newShape[j]) break;
+                indices[j] = 0;
+            }
+        }
+
+        return new Tensor<>(resultData, newShape);
     }
 
     public Tensor<T> matmul(Tensor<T> b) {
