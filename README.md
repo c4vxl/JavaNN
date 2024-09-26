@@ -1,0 +1,2 @@
+# jNN
+java ai library
