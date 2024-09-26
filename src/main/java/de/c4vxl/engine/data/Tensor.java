@@ -77,6 +77,13 @@ public class Tensor<T> {
     }
 
     /**
+     * Get the item of the Tensor
+     */
+    public T item() {
+        return data[0];
+    }
+
+    /**
      * Get the representation of 0 in the current dtype
      */
     public T zeroValue() {
@@ -112,6 +119,7 @@ public class Tensor<T> {
     /**
      * Element wise addition
      */
+    public Tensor<T> add(T other) { return add(of(other, this.shape)); }
     public Tensor<T> add(Tensor<T> other) {
         T[] otherData = other.data;
         return elementWiseIndexed((a, index) -> {
@@ -122,6 +130,7 @@ public class Tensor<T> {
     /**
      * Element wise subtraction
      */
+    public Tensor<T> sub(T other) { return sub(of(other, this.shape)); }
     public Tensor<T> sub(Tensor<T> other) {
         T[] otherData = other.data;
         return elementWiseIndexed((a, index) -> {
@@ -132,6 +141,7 @@ public class Tensor<T> {
     /**
      * Element wise division
      */
+    public Tensor<T> div(T other) { return div(of(other, this.shape)); }
     public Tensor<T> div(Tensor<T> other) {
         T[] otherData = other.data;
         return elementWiseIndexed((a, index) -> {
@@ -142,6 +152,7 @@ public class Tensor<T> {
     /**
      * Element wise multiplication
      */
+    public Tensor<T> mul(T other) { return mul(of(other, this.shape)); }
     public Tensor<T> mul(Tensor<T> other) {
         T[] otherData = other.data;
         return elementWiseIndexed((a, index) -> {
@@ -303,9 +314,7 @@ public class Tensor<T> {
             resultData[i] = data[originalIndex];
         }
 
-        this.shape = newShape;
-        this.data = resultData;
-        return this;
+        return new Tensor<>(resultData, newShape);
     }
 
     /**
@@ -315,8 +324,9 @@ public class Tensor<T> {
         if (shapeToSize(shape) != this.size)
             throw new IllegalArgumentException("The size of the Tensor can not change!");
 
-        this.shape = shape;
-        return this;
+        Tensor<T> t = this.clone();
+        t.shape = shape;
+        return t;
     }
 
     /**
