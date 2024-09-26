@@ -207,8 +207,42 @@ public class Tensor<T> {
      * Transpose the Tensor's data over different dimensions
      */
     public Tensor<T> transpose(int... dims) {
-        // dims is the index of the dimension in the this.shape list
-        // TODO: implement
+        // just flip if it's a 2d Tensor and no dims are specified
+        if (dims.length == 0 && shape.length == 2) dims = new int[]{1, 0};
+        else if (dims.length == 0 || dims.length != shape.length)
+            throw new IllegalArgumentException("Invalid dimensions specified!");
+
+        // handle negative dims
+        for (int i = 0; i < dims.length; i++)
+            dims[i] = dims[i] < 0 ? shape.length + dims[i] : dims[i];
+
+        // calculate new shape and new data array
+        int[] newShape = Arrays.stream(dims).map(d -> shape[d]).toArray();
+        T[] resultData = (T[]) Array.newInstance(data.getClass().getComponentType(),
+                Arrays.stream(newShape).reduce(1, (a, b) -> a * b));
+
+        int[] strides = new int[shape.length];
+        strides[shape.length - 1] = 1;
+        for (int i = shape.length - 2; i >= 0; i--)
+            strides[i] = strides[i + 1] * shape[i + 1];
+
+        for (int i = 0; i < resultData.length; i++) {
+            int[] newIndex = new int[newShape.length];
+            int temp = i;
+            for (int j = newShape.length - 1; j >= 0; j--) {
+                newIndex[j] = temp % newShape[j];
+                temp /= newShape[j];
+            }
+
+            int originalIndex = 0;
+            for (int j = 0; j < dims.length; j++)
+                originalIndex += newIndex[j] * strides[dims[j]];
+
+            resultData[i] = data[originalIndex];
+        }
+
+        this.shape = newShape;
+        this.data = resultData;
         return this;
     }
 
@@ -227,7 +261,7 @@ public class Tensor<T> {
      * Insert a Dimension at a given position
      */
     public Tensor<T> unsqueeze(int pos) {
-        if (pos < 0) pos = this.shape.length + pos + 1; // handle negative indexes
+        if (pos < 0) pos = this.shape.length + pos; // handle negative indexes
 
         if (this.shape.length <= pos) throw new IllegalArgumentException("Invalid position!");
 

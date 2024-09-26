@@ -6,8 +6,6 @@ public class Main {
     public static void main(String[] args) {
         Tensor<Double> x = new Tensor<Double>(10, 10, 1).fill(1.0);
 
-        System.out.println(x);
-        System.out.println(x.unsqueeze(0));
-        System.out.println(x.squeeze(-1));
+        System.out.println(x.transpose(0, -1, 1));
     }
 }
