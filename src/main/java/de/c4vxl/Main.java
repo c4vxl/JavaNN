@@ -4,8 +4,9 @@ import de.c4vxl.engine.data.Tensor;
 
 public class Main {
     public static void main(String[] args) {
-        Tensor<Boolean> x = new Tensor<>(Boolean.class, 10, 10, 1);
+        Tensor<Integer> x = new Tensor<>(Integer.class, 10, 10);
+        Tensor<Integer> y = new Tensor<>(Integer.class, 10, 10);
 
-        System.out.println(x.zeroValue());
+        System.out.println(x.matmul(y));
     }
 }

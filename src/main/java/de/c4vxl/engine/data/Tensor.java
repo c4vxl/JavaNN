@@ -1,8 +1,9 @@
 package de.c4vxl.engine.data;
 
 import java.lang.reflect.Array;
-import java.lang.reflect.InvocationTargetException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Random;
 import java.util.function.BiFunction;
 
 @SuppressWarnings("unchecked")
@@ -91,19 +92,24 @@ public class Tensor<T> {
         return this;
     }
 
+    public T operate(T a, T b, BiFunction<Double, Double, Double> operation) {
+        if (dtype == Boolean.class)
+            throw new RuntimeException("Operation can not be performed on dtype 'Boolean'");
+
+        double result = operation.apply(((Number) a).doubleValue(), ((Number) b).doubleValue());
+        return dtype == Float.class ? (T) Float.valueOf((float) result)
+                : dtype == Long.class ? (T) Long.valueOf((long) result)
+                : dtype == Integer.class ? (T) Integer.valueOf((int) result)
+                : (T) Double.valueOf(result);
+    }
+
     /**
      * Element wise addition
      */
     public Tensor<T> add(Tensor<T> other) {
         T[] otherData = other.data;
         return elementWiseIndexed((a, index) -> {
-            T b = otherData[index];
-
-            return a instanceof Double ? ((Number) a).doubleValue() + ((Number) b).doubleValue()
-                            : a instanceof Integer ? ((Number) a).intValue() + ((Number) b).intValue()
-                            : a instanceof Float ? ((Number) a).floatValue() + ((Number) b).floatValue()
-                            : a instanceof Long ? ((Number) a).longValue() + ((Number) b).longValue()
-                    : b;
+            return operate(a, otherData[index], Double::sum);
         });
     }
 
@@ -113,13 +119,7 @@ public class Tensor<T> {
     public Tensor<T> sub(Tensor<T> other) {
         T[] otherData = other.data;
         return elementWiseIndexed((a, index) -> {
-            T b = otherData[index];
-
-            return a instanceof Double ? ((Number) a).doubleValue() - ((Number) b).doubleValue()
-                    : a instanceof Integer ? ((Number) a).intValue() - ((Number) b).intValue()
-                    : a instanceof Float ? ((Number) a).floatValue() - ((Number) b).floatValue()
-                    : a instanceof Long ? ((Number) a).longValue() - ((Number) b).longValue()
-                    : b;
+            return operate(a, otherData[index], (t, o) -> t - o);
         });
     }
 
@@ -129,13 +129,7 @@ public class Tensor<T> {
     public Tensor<T> div(Tensor<T> other) {
         T[] otherData = other.data;
         return elementWiseIndexed((a, index) -> {
-            T b = otherData[index];
-
-            return a instanceof Double ? ((Number) a).doubleValue() / ((Number) b).doubleValue()
-                    : a instanceof Integer ? ((Number) a).intValue() / ((Number) b).intValue()
-                    : a instanceof Float ? ((Number) a).floatValue() / ((Number) b).floatValue()
-                    : a instanceof Long ? ((Number) a).longValue() / ((Number) b).longValue()
-                    : b;
+            return operate(a, otherData[index], (t, o) -> t / o);
         });
     }
 
@@ -145,13 +139,7 @@ public class Tensor<T> {
     public Tensor<T> mul(Tensor<T> other) {
         T[] otherData = other.data;
         return elementWiseIndexed((a, index) -> {
-            T b = otherData[index];
-
-            return a instanceof Double ? ((Number) a).doubleValue() * ((Number) b).doubleValue()
-                    : a instanceof Integer ? ((Number) a).intValue() * ((Number) b).intValue()
-                    : a instanceof Float ? ((Number) a).floatValue() * ((Number) b).floatValue()
-                    : a instanceof Long ? ((Number) a).longValue() * ((Number) b).longValue()
-                    : b;
+            return operate(a, otherData[index], (t, o) -> t * o);
         });
     }
 
@@ -199,19 +187,8 @@ public class Tensor<T> {
             throw new RuntimeException("Operation can not be performed on dtype 'Boolean'");
 
         return elementWiseIndexed((a, index) -> {
-            if (a instanceof Double) {
-                a = (Double) a > (Double) max ? max : a;
-                return (Double) a < (Double) min ? min : a;
-            } else if (a instanceof Float) {
-                a = (Float) a > (Float) max ? max : a;
-                return (Float) a < (Float) min ? min : a;
-            } else if (a instanceof Long) {
-                a = (Long) a > (Long) max ? max : a;
-                return (Long) a < (Long) min ? min : a;
-            } else {
-                a = (Integer) a > (Integer) max ? max : a;
-                return (Integer) a < (Integer) min ? min : a;
-            }
+            a = operate(a, max, (s, m) -> s > m ? m : s); // clip maximum
+            return operate(a, min, (s, m) -> s < m ? m : s); // clip minimum
         });
     }
 
@@ -227,13 +204,29 @@ public class Tensor<T> {
         return this;
     }
 
-    public Tensor<T> matmul(Tensor b) {
+    public Tensor<T> matmul(Tensor<T> b) {
         if (this.shape.length != 2 || b.shape.length != 2) throw new IllegalArgumentException("Matrix multiplication can only be done with 2D tensors.");
         if (this.shape[1] != b.shape[0]) throw new IllegalArgumentException("Number of columns of the first matrix must equal the number of rows of the second matrix.");
 
-        // TODO: do matmul
+        int m = this.shape[0];
+        int n = this.shape[1];
+        int p = b.shape[1];
+        T[] resultData = (T[]) Array.newInstance(dtype, m * p);
 
-        return this;
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < p; j++) {
+                T sum = zeroValue();
+                for (int k = 0; k < n; k++) {
+                    T a = this.data[i * n + k];
+                    T o = b.data[k * p + j];
+
+                    sum = operate(sum, operate(a, o, (t, c) -> t * c), Double::sum);
+                }
+                resultData[i * p + j] = sum;
+            }
+        }
+
+        return new Tensor<>(resultData, m, p);
     }
 
     /**
