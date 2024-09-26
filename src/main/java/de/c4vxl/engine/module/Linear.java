@@ -59,13 +59,10 @@ public class Linear extends Module {
         // compute gradient with respect to weight (lastInp^T @ gradOut)
         Tensor<Double> gradWeight = lastInput.transpose().matmul(grad); // clip gradient;
 
-        System.out.println(weight);
-
         // update weights
         weight = weight.sub(weight.mul(Tensor.of(wd, weight.shape))); // apply weight decay
         weight = weight.sub(gradWeight.mul(Tensor.of(lr, weight.shape))); // change weight with respect to grad and learning rate
 
-        System.out.println(weight);
 
         if (useBias) {
             // compute bias gradient
