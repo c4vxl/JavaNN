@@ -1,6 +1,7 @@
 package de.c4vxl.engine.data;
 
 import java.lang.reflect.Array;
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.function.BiFunction;
 
@@ -66,6 +67,17 @@ public class Tensor<T> {
     public Tensor<T> fill(T obj) {
         Arrays.fill(data, obj);
         return this;
+    }
+
+    /**
+     * Get the representation of 0 in the current dtype
+     */
+    public T zeroValue() {
+        try {
+            return (T) dtype.getMethod("valueOf", String.class).invoke(null, "0");
+        } catch (Exception e) { // should never be triggered as we check the dtype on construction
+            return null;
+        }
     }
 
     /**
@@ -201,6 +213,27 @@ public class Tensor<T> {
                 return (Integer) a < (Integer) min ? min : a;
             }
         });
+    }
+
+    /**
+     * Sum across one dimension
+     */
+    public Tensor<T> sum(int dim) {
+        if (dim < 0 || dim >= this.shape.length) throw new IllegalArgumentException("Invalid dimension specified.");
+        if (dtype == Boolean.class) throw new RuntimeException("Operation can not be performed on dtype 'Boolean'");
+
+        // TODO: implement
+
+        return this;
+    }
+
+    public Tensor<T> matmul(Tensor b) {
+        if (this.shape.length != 2 || b.shape.length != 2) throw new IllegalArgumentException("Matrix multiplication can only be done with 2D tensors.");
+        if (this.shape[1] != b.shape[0]) throw new IllegalArgumentException("Number of columns of the first matrix must equal the number of rows of the second matrix.");
+
+        // TODO: do matmul
+
+        return this;
     }
 
     /**

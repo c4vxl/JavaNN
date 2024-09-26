@@ -4,8 +4,8 @@ import de.c4vxl.engine.data.Tensor;
 
 public class Main {
     public static void main(String[] args) {
-        Tensor<Double> x = new Tensor<Double>(10, 10, 1).fill(1.0);
+        Tensor<Boolean> x = new Tensor<>(Boolean.class, 10, 10, 1);
 
-        System.out.println(x.transpose(0, -1, 1));
+        System.out.println(x.zeroValue());
     }
 }
