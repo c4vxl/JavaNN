@@ -1,8 +1,7 @@
 package de.c4vxl.engine.data;
 
 import java.lang.reflect.Array;
-import java.util.Arrays;
-import java.util.Random;
+import java.util.*;
 import java.util.function.BiFunction;
 
 @SuppressWarnings("unchecked")
@@ -202,6 +201,63 @@ public class Tensor<T> {
                 return (Integer) a < (Integer) min ? min : a;
             }
         });
+    }
+
+    /**
+     * Transpose the Tensor's data over different dimensions
+     */
+    public Tensor<T> transpose(int... dims) {
+        // dims is the index of the dimension in the this.shape list
+        // TODO: implement
+        return this;
+    }
+
+    /**
+     * Reshape the Tensor's data
+     */
+    public Tensor<T> reshape(int... shape) {
+        if (shapeToSize(shape) != this.size)
+            throw new IllegalArgumentException("The size of the Tensor can not change!");
+
+        this.shape = shape;
+        return this;
+    }
+
+    /**
+     * Insert a Dimension at a given position
+     */
+    public Tensor<T> unsqueeze(int pos) {
+        if (pos < 0) pos = this.shape.length + pos + 1; // handle negative indexes
+
+        if (this.shape.length <= pos) throw new IllegalArgumentException("Invalid position!");
+
+        // add dim
+        ArrayList<Integer> shape = new ArrayList<>(Arrays.stream(this.shape).boxed().toList());
+
+        shape.add(pos, 1);
+
+        // set
+        this.shape = shape.stream().mapToInt(Integer::intValue).toArray();;
+
+        return this;
+    }
+
+    /**
+     * Remove a Dimension at a given position
+     */
+    public Tensor<T> squeeze(int pos) {
+        if (pos < 0) pos = this.shape.length + pos; // handle negative indexes
+
+        if (this.shape.length <= pos) throw new IllegalArgumentException("Invalid position!");
+
+        // add dim
+        ArrayList<Integer> shape = new ArrayList<>(Arrays.stream(this.shape).boxed().toList());
+        shape.remove(pos);
+
+        // set
+        this.shape = shape.stream().mapToInt(Integer::intValue).toArray();;
+
+        return this;
     }
 
     @Override

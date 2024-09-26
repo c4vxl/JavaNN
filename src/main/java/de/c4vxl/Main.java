@@ -4,8 +4,10 @@ import de.c4vxl.engine.data.Tensor;
 
 public class Main {
     public static void main(String[] args) {
-        Tensor<Double> x = new Tensor<Double>(10, 10).fill(1.0);
+        Tensor<Double> x = new Tensor<Double>(10, 10, 1).fill(1.0);
 
-        System.out.println(Tensor.of(10, 5, 5));
+        System.out.println(x);
+        System.out.println(x.unsqueeze(0));
+        System.out.println(x.squeeze(-1));
     }
 }
