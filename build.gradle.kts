@@ -10,7 +10,8 @@ repositories {
 }
 
 dependencies {
-    implementation("com.google.code.gson:gson:2.10.1")
+    implementation("com.thoughtworks.xstream:xstream:1.4.20") // used for saving the module state in a file
+
     testImplementation(platform("org.junit:junit-bom:5.10.0"))
     testImplementation("org.junit.jupiter:junit-jupiter")
 }

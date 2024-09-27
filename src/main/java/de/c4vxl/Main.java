@@ -5,12 +5,23 @@ import de.c4vxl.engine.nn.MLP;
 
 public class Main {
     public static void main(String[] args) {
-        MLP mlp = new MLP(4, 2, 1, 5);
-        System.out.println(mlp.toJSON());
+        MLP model = new MLP(4, 10, 1, 5);
+        model.load("model.mdl");
+        Tensor<Double> wanted = Tensor.of(0.0, 1, 10);
+        wanted.data[2] = 6.0;
 
+        Tensor<Double> input = Tensor.of(12.0, 1, 4);
 
-        for (int i = 0; i < 500; i++) {
-            System.out.println(mlp.forward(Tensor.of(2.0, 1, 4)));
+        for (int i = 0; i < 5; i++) {
+            Tensor<Double> out = model.forward(input);
+            Tensor<Double> loss = out.sub(wanted).pow(2.0).sum(0);
+            System.out.println(loss.item());
+
+            Tensor<Double> gradient = out.sub(wanted).mul(2.0);
+
+            model.backward(gradient, 0.00001, 0.001);
         }
+
+        model.export("model.mdl");
     }
 }
