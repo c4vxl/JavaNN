@@ -1,6 +1,4 @@
-package de.c4vxl.engine.activation;
-
-import de.c4vxl.engine.data.Tensor;
+package de.c4vxl.engine.data;
 
 public class Activation {
     /**
