@@ -3,10 +3,20 @@ package de.c4vxl.engine.data;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
-import java.util.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * This class serves as a base for creating any kind of modules.
@@ -27,7 +37,12 @@ public class Module {
             try {
                 Object value = field.get(this);
 
-                state.put(field.getName(), cast(value));
+                // copy value if possible
+                try {
+                    value = value.getClass().getMethod("clone", String.class).invoke(null);
+                } catch (Exception ignored) {}
+
+                state.put(field.getName(), value);
             } catch (IllegalAccessException e) {
                 System.err.println("Error while trying to create the state! " + e);
             }
@@ -70,45 +85,57 @@ public class Module {
         return this;
     }
 
+    private Map<String, Object> mapTensor(Tensor<?> tensor) {
+        Map<String, Object> tensorData = new HashMap<>();
+        tensorData.put("dtype", tensor.dtype.getSimpleName());
+        tensorData.put("data", tensor.data);
+        tensorData.put("shape", tensor.shape);
+        return tensorData;
+    }
+
     @SuppressWarnings("unchecked")
-    private Object cast(Object value) {
-        // if value is a tensor -> return
-        if (value instanceof Tensor<?>) return value;
+    public Map<String, Object> replaceTensors(Map<String, Object> map) {
+        Map<String, Object> replacedMap = new HashMap<>(map);
 
-        // if value is a module -> return state
-        else if (value instanceof Module) return ((Module) value).state();
+        for (Map.Entry<String, Object> entry : replacedMap.entrySet()) {
+            Object value = entry.getValue();
 
-        // if value is a list -> cast each element -> return
-        else if (value instanceof List<?>) {
-            List<Object> list = (List<Object>) value;
-            list.replaceAll(this::cast);
-            return list;
+            if (value instanceof Tensor<?>) {
+                // Replace the tensor with its mapped representation
+                entry.setValue(mapTensor((Tensor<?>) value));
+            } else if (value instanceof Module) {
+                // Recursively replace tensors in nested modules
+                entry.setValue(((Module) value).replaceTensors(((Module) value).state()));
+            } else if (value instanceof List<?>) {
+                // Handle lists of potential tensors
+                List<?> list = (List<?>) value;
+                List<Object> newList = new ArrayList<>();
+                for (Object item : list) {
+                    if (item instanceof Tensor<?>) {
+                        newList.add(mapTensor((Tensor<?>) item));
+                    } else if (item instanceof Module) {
+                        newList.add(((Module) item).replaceTensors(((Module) item).state()));
+                    } else {
+                        newList.add(item);
+                    }
+                }
+                entry.setValue(newList);
+            }
         }
 
-        // else -> return value
-        return value;
+        return replacedMap;
     }
+
 
     /**
      * Get the state as a JSON String
      */
     public String toJSON() {
         Map<String, Object> state = state();
-
-        state.forEach((key, value) -> {
-            if (value instanceof Tensor<?> tensor) { // manually serialize Tensors as gson can not handle <T>
-                Map<String, Object> tensorData = new HashMap<>();
-                tensorData.put("dtype", tensor.dtype.getSimpleName());
-                tensorData.put("data", tensor.data);
-                tensorData.put("shape", tensor.shape);
-                state.put(key, tensorData);
-            }
-        });
-
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
-
-        return gson.toJson(state);
+        return gson.toJson(replaceTensors(state));
     }
+
 
     /**
      * Load the state from a JSON String
@@ -158,6 +185,38 @@ public class Module {
 
             this.load_state(extracted);
         } catch (Exception ignored) {}
+
+        return this;
+    }
+
+    /**
+     * Save a module to a file
+     */
+    public Module export(String path) {
+        try {
+            PrintWriter writer = new PrintWriter(new FileWriter(path));
+            writer.print(toJSON());
+            writer.close();
+        } catch (IOException e) {
+            System.err.println("Something went wrong when saving a module to a file!" + e);
+        }
+
+        return this;
+    }
+
+    /**
+     * Load a module form a file
+     */
+    public Module load(String path) {
+        File file = new File(path);
+        if (!file.exists()) return this;
+
+        try {
+            String json = String.join("\n", Files.readAllLines(Path.of(path)));
+            fromJSON(json);
+        } catch (IOException e) {
+            System.err.println("Something went wrong when reading a module to a file!" + e);
+        }
 
         return this;
     }
