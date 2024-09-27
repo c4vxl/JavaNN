@@ -37,6 +37,7 @@ public class MLP extends Module {
     /**
      * Backward pass
      */
+    @SuppressWarnings("unchecked")
     public void backward(Tensor<Double> grad, double lr, double wd) {
         grad = out_proj.backward(grad, lr, wd);
 

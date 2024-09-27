@@ -3,9 +3,19 @@ package de.c4vxl;
 import de.c4vxl.engine.data.Tensor;
 import de.c4vxl.engine.nn.MLP;
 
+import java.util.Map;
+
 public class Main {
     public static void main(String[] args) {
-        MLP model = new MLP(4, 2, 2, 16);
+        Map<String, Object> map = run(new MLP(4, 2, 2, 16));
+
+
+        System.out.println(map);
+
+        run((MLP) new MLP(4, 2, 2, 16).load_state(map));
+    }
+
+    private static Map<String, Object> run(MLP model) {
         Tensor<Double> input = new Tensor<>(1, 4);
         Tensor<Double> wanted = new Tensor<>(new Double[]{0.0, 5.0});
 
@@ -23,5 +33,7 @@ public class Main {
             // do backward pass
             model.backward(gradient, 0.0001, 0.001);
         }
+
+        return model.state();
     }
 }
