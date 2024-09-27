@@ -1,10 +1,12 @@
 package de.c4vxl.engine.data;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * This class serves as a base for creating any kind of modules.
@@ -85,5 +87,78 @@ public class Module {
 
         // else -> return value
         return value;
+    }
+
+    /**
+     * Get the state as a JSON String
+     */
+    public String toJSON() {
+        Map<String, Object> state = state();
+
+        state.forEach((key, value) -> {
+            if (value instanceof Tensor<?> tensor) { // manually serialize Tensors as gson can not handle <T>
+                Map<String, Object> tensorData = new HashMap<>();
+                tensorData.put("dtype", tensor.dtype.getSimpleName());
+                tensorData.put("data", tensor.data);
+                tensorData.put("shape", tensor.shape);
+                state.put(key, tensorData);
+            }
+        });
+
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+
+        return gson.toJson(state);
+    }
+
+    /**
+     * Load the state from a JSON String
+     */
+    @SuppressWarnings("unchecked")
+    public Module fromJSON(String json) {
+        try {
+            Map<String, Object> extracted = new Gson().fromJson(json, Map.class);
+
+            Field[] fields = this.getClass().getDeclaredFields();
+            for (int i = 0; i < fields.length; i++) {
+                Field field = fields[i];
+
+                field.setAccessible(true);
+
+                Object value = field.get(this);
+
+                // skip null and Module values
+                if (value == null || value instanceof Module) continue;
+
+                String key = field.getName();
+                Object other = extracted.get(key);
+
+                if (value instanceof Tensor<?>) {
+                    Map<String, Object> tensorData = (Map<String, Object>) other;
+                    Class<?> dtype = Class.forName("java.lang." + tensorData.get("dtype").toString());
+                    int[] shape = ((ArrayList<?>) tensorData.get("shape"))
+                            .stream()
+                            .mapToInt(o -> ((Number) o).intValue())
+                            .toArray();
+                    Tensor<?> output = new Tensor<>(dtype, shape);
+
+                    List<?> data = (List<?>) ((Map<?, ?>) other).get("data");
+                    for (int i1 = 0; i1 < output.data.length; i1++) {
+                        Array.set(output.data, i1, dtype.cast(data.get(i1)));
+                    }
+
+                    extracted.put(key, output.clone());
+                }
+                else {
+                    if (value instanceof Integer && !(other instanceof Integer))
+                        other = Integer.valueOf(other.toString().split("\\.")[0]);
+
+                    extracted.put(key, value.getClass().getMethod("valueOf", String.class).invoke(null, other.toString()));
+                }
+            }
+
+            this.load_state(extracted);
+        } catch (Exception ignored) {}
+
+        return this;
     }
 }
