@@ -1,5 +1,6 @@
 package de.c4vxl.engine.nn;
 
+import de.c4vxl.engine.activation.Activation;
 import de.c4vxl.engine.data.Module;
 import de.c4vxl.engine.data.Tensor;
 import de.c4vxl.engine.module.Linear;
@@ -26,12 +27,12 @@ public class MLP extends Module {
      * Forward pass
      */
     public Tensor<Double> forward(Tensor<Double> x) {
-        x = inp_proj.forward(x);
+        x = Activation.ReLU(inp_proj.forward(x));
 
         for (Linear layer : hiddenLayers)
-            x = layer.forward(x);
+            x = Activation.ReLU(layer.forward(x));
 
-        return out_proj.forward(x);
+        return Activation.ReLU(out_proj.forward(x));
     }
 
     /**
