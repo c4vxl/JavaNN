@@ -3,6 +3,7 @@ package de.c4vxl.engine.data;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Random;
 import java.util.function.BiFunction;
 
@@ -74,6 +75,20 @@ public class Tensor<T> {
     public Tensor<T> fill(T obj) {
         Arrays.fill(data, obj);
         return this;
+    }
+
+    /**
+     * Get the largest object of the data list
+     */
+    public T max() {
+        return Arrays.stream(data).max((Comparator<? super T>) Comparator.naturalOrder()).orElseThrow();
+    }
+
+    /**
+     * Get the smallest object of the data list
+     */
+    public T min() {
+        return Arrays.stream(data).min((Comparator<? super T>) Comparator.naturalOrder()).orElseThrow();
     }
 
     /**
@@ -365,6 +380,31 @@ public class Tensor<T> {
 
         return this;
     }
+
+    /**
+     * Compute a softmax on the data in the Tensor
+     */
+    public Tensor<Double> softmax() { return softmax(1.0); }
+    public Tensor<Double> softmax(double temperature) {
+        if (dtype != Double.class) throw new IllegalArgumentException("This operation can only be performed on dtype 'Double'!");
+        if (temperature <= 0) throw new IllegalArgumentException("Temperature must be greater than 0!");
+
+        Tensor<Double> result = (Tensor<Double>) this.clone();
+
+        double maxLogit = result.max();
+        double sumExp = Arrays.stream(result.data)
+                .map(x -> Math.exp((x - maxLogit) / temperature))
+                .reduce(0.0, Double::sum);
+
+        if (sumExp == 0)
+            return result;
+
+        for (int i = 0; i < result.data.length; i++)
+            result.data[i] = Math.exp((result.data[i] - maxLogit) / temperature) / sumExp;
+
+        return result;
+    }
+
 
     @Override
     public Tensor<T> clone() {
