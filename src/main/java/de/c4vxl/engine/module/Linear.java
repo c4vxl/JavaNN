@@ -57,7 +57,8 @@ public class Linear extends Module {
      */
     public Tensor<Double> backward(Tensor<Double> grad, double lr, double wd) {
         // compute gradient with respect to weight (lastInp^T @ gradOut)
-        Tensor<Double> gradWeight = lastInput.transpose().matmul(grad); // clip gradient;
+        Tensor<Double> gradWeight = lastInput.transpose().matmul(grad)
+                .clip(-20.0, 20.0); // clip gradient;
 
         // update weights
         weight = weight.sub(weight.mul(Tensor.of(wd, weight.shape))); // apply weight decay
