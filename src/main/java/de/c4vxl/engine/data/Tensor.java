@@ -35,9 +35,8 @@ public class Tensor<T> {
     public Tensor(Class<T> dtype, int... shape) {
         this((T[]) Array.newInstance(dtype, shapeToSize(shape)), shape);
 
+        Random rand = new Random();
         for (int i = 0; i < data.length; i++) {
-            Random rand = new Random();
-
             if (dtype == Double.class) data[i] = (T) Double.valueOf(rand.nextDouble());
             else if (dtype == Integer.class) data[i] = (T) Integer.valueOf(rand.nextInt(99));
             else if (dtype == Long.class) data[i] = (T) Long.valueOf(rand.nextLong());
@@ -113,11 +112,12 @@ public class Tensor<T> {
      * Run an operation element wise
      */
     public Tensor<T> elementWiseIndexed(BiFunction<T, Integer, Object> task) {
+        Tensor<T> out = this.clone();
         for (int i = 0; i < this.data.length; i++) {
-            this.data[i] = (T) task.apply(this.data[i], i);
+            out.data[i] = (T) task.apply(this.data[i], i);
         }
 
-        return this;
+        return out;
     }
 
     public T operate(T a, T b, BiFunction<Double, Double, Double> operation) {
@@ -137,7 +137,7 @@ public class Tensor<T> {
     public Tensor<T> add(T other) { return add(of(other, this.shape)); }
     public Tensor<T> add(Tensor<T> other) {
         T[] otherData = other.data;
-        return elementWiseIndexed((a, index) -> {
+        return this.clone().elementWiseIndexed((a, index) -> {
             return operate(a, otherData[index], Double::sum);
         });
     }
@@ -148,7 +148,7 @@ public class Tensor<T> {
     public Tensor<T> sub(T other) { return sub(of(other, this.shape)); }
     public Tensor<T> sub(Tensor<T> other) {
         T[] otherData = other.data;
-        return elementWiseIndexed((a, index) -> {
+        return this.clone().elementWiseIndexed((a, index) -> {
             return operate(a, otherData[index], (t, o) -> t - o);
         });
     }
@@ -159,7 +159,7 @@ public class Tensor<T> {
     public Tensor<T> div(T other) { return div(of(other, this.shape)); }
     public Tensor<T> div(Tensor<T> other) {
         T[] otherData = other.data;
-        return elementWiseIndexed((a, index) -> {
+        return this.clone().elementWiseIndexed((a, index) -> {
             return operate(a, otherData[index], (t, o) -> t / o);
         });
     }
@@ -170,7 +170,7 @@ public class Tensor<T> {
     public Tensor<T> mul(T other) { return mul(of(other, this.shape)); }
     public Tensor<T> mul(Tensor<T> other) {
         T[] otherData = other.data;
-        return elementWiseIndexed((a, index) -> {
+        return this.clone().elementWiseIndexed((a, index) -> {
             return operate(a, otherData[index], (t, o) -> t * o);
         });
     }
@@ -182,7 +182,7 @@ public class Tensor<T> {
         if (dtype != Double.class)
             throw new RuntimeException("Operation can only be performed on dtype 'Double'");
 
-        return this.elementWiseIndexed((a, index) -> {
+        return this.clone().elementWiseIndexed((a, index) -> {
             return Math.sqrt((Double) a);
         });
     }
@@ -194,7 +194,7 @@ public class Tensor<T> {
         if (dtype != Double.class)
             throw new RuntimeException("Operation can only be performed on dtype 'Double'");
 
-        return this.elementWiseIndexed((a, index) -> {
+        return this.clone().elementWiseIndexed((a, index) -> {
             return Math.pow((double) a, pow);
         });
     }
@@ -206,7 +206,7 @@ public class Tensor<T> {
         if (dtype != Double.class)
             throw new RuntimeException("Operation can only be performed on dtype 'Double'");
 
-        return this.elementWiseIndexed((a, index) -> {
+        return this.clone().elementWiseIndexed((a, index) -> {
             return Math.log((double) a);
         });
     }
@@ -218,49 +218,51 @@ public class Tensor<T> {
         if (dtype == Boolean.class)
             throw new RuntimeException("Operation can not be performed on dtype 'Boolean'");
 
-        return elementWiseIndexed((a, index) -> {
+        return this.clone().elementWiseIndexed((a, index) -> {
             a = operate(a, max, (s, m) -> s > m ? m : s); // clip maximum
             return operate(a, min, (s, m) -> s < m ? m : s); // clip minimum
         });
     }
 
     /**
-     * Sum across one dimension
+     * Sum across a given dimension.
      */
-    public Tensor<T> sum(int dim) {
-        if (dim < 0 || dim >= this.shape.length)
-            throw new IllegalArgumentException("Invalid dimension specified.");
+    public Tensor<T> sum(int axis) {
+        if (axis < 0 || axis >= this.shape.length)
+            throw new IllegalArgumentException("Invalid axis specified.");
         if (dtype == Boolean.class)
-            throw new RuntimeException("Operation can not be performed on dtype 'Boolean'");
+            throw new RuntimeException("Operation cannot be performed on dtype 'Boolean'");
 
-        // Calculate the new shape after summing over the specified dimension
-        int[] newShape = Arrays.copyOf(this.shape, this.shape.length - 1);
-        for (int i = dim; i < newShape.length; i++) {
-            newShape[i] = this.shape[i + 1];
+        // Calculate the size of the new shape
+        int[] newShape = new int[shape.length - 1];
+        int newSize = 1;
+        for (int i = 0, j = 0; i < shape.length; i++) {
+            if (i != axis) {
+                newShape[j++] = shape[i];
+                newSize *= shape[i];
+            }
         }
 
-        // Prepare the result data array
-        T[] resultData = (T[]) Array.newInstance(dtype, shapeToSize(newShape));
+        T[] resultData = (T[]) Array.newInstance(dtype, newSize);
+        int[] index = new int[shape.length];
+        for (int i = 0; i < size; i++) {
+            int currentIndex = i;
+            // Fill the index array
+            for (int j = shape.length - 1; j >= 0; j--) {
+                index[j] = currentIndex % shape[j];
+                currentIndex /= shape[j];
+            }
 
-        // Sum elements along the specified dimension
-        int[] indices = new int[this.shape.length];
-        for (int i = 0; i < resultData.length; i++) {
-            T sum = zeroValue();
-            for (indices[dim] = 0; indices[dim] < this.shape[dim]; indices[dim]++) {
-                int index = 0;
-                for (int j = 0; j < this.shape.length; j++) {
-                    index += (j < dim) ? indices[j] : (j == dim) ? 0 : indices[j - 1];
-                    index *= this.shape[j];
+            // Calculate the output index based on the axis to sum over
+            int outputIndex = 0;
+            for (int j = 0, k = 0; j < shape.length; j++) {
+                if (j != axis) {
+                    outputIndex = outputIndex * newShape[k] + index[j];
+                    k++;
                 }
-                sum = operate(sum, data[index], Double::sum);
             }
-            resultData[i] = sum;
 
-            // Increment indices
-            for (int j = newShape.length - 1; j >= 0; j--) {
-                if (++indices[j] < newShape[j]) break;
-                indices[j] = 0;
-            }
+            Array.set(resultData, outputIndex, data[i]);
         }
 
         return new Tensor<>(resultData, newShape);
@@ -357,10 +359,7 @@ public class Tensor<T> {
 
         shape.add(pos, 1);
 
-        // set
-        this.shape = shape.stream().mapToInt(Integer::intValue).toArray();;
-
-        return this;
+        return this.reshape(shape.stream().mapToInt(Integer::intValue).toArray());
     }
 
     /**
@@ -375,34 +374,7 @@ public class Tensor<T> {
         ArrayList<Integer> shape = new ArrayList<>(Arrays.stream(this.shape).boxed().toList());
         shape.remove(pos);
 
-        // set
-        this.shape = shape.stream().mapToInt(Integer::intValue).toArray();;
-
-        return this;
-    }
-
-    /**
-     * Compute a softmax on the data in the Tensor
-     */
-    public Tensor<Double> softmax() { return softmax(1.0); }
-    public Tensor<Double> softmax(double temperature) {
-        if (dtype != Double.class) throw new IllegalArgumentException("This operation can only be performed on dtype 'Double'!");
-        if (temperature <= 0) throw new IllegalArgumentException("Temperature must be greater than 0!");
-
-        Tensor<Double> result = (Tensor<Double>) this.clone();
-
-        double maxLogit = result.max();
-        double sumExp = Arrays.stream(result.data)
-                .map(x -> Math.exp((x - maxLogit) / temperature))
-                .reduce(0.0, Double::sum);
-
-        if (sumExp == 0)
-            return result;
-
-        for (int i = 0; i < result.data.length; i++)
-            result.data[i] = Math.exp((result.data[i] - maxLogit) / temperature) / sumExp;
-
-        return result;
+        return this.reshape(shape.stream().mapToInt(Integer::intValue).toArray());
     }
 
 
