@@ -1,2 +1,2 @@
-rootProject.name = "jNN"
+rootProject.name = "JavaNN"
 
