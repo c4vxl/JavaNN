@@ -9,23 +9,28 @@ public class Main {
         // This is an example of how Training could look like
         // when running you can see the loss decreasing as the model learns to produce the wanted shape ($wanted)
 
-        MLP model = new MLP(4, 10, 1, 5);
-        model.load("model.mdl");
-        Tensor<Double> wanted = Tensor.of(0.0, 1, 10);
-        wanted.data[2] = 6.0;
+        MLP model = new MLP(4, 2, 4, 12);
 
-        Tensor<Double> input = Tensor.of(12.0, 1, 4);
+        Tensor<Double> label = new Tensor<>(new Double[]{0.0, 1.0}, 1, 2); // example label (desired output)
+        Tensor<Double> input = new Tensor<>(1, 4); // example input
 
-        for (int i = 0; i < 5; i++) {
-            Tensor<Double> out = model.forward(input);
-            Tensor<Double> loss = LossFunction.meanSquaredError(out, wanted);
-            System.out.println(loss.item());
+        double lastLoss = Double.MAX_VALUE;
+        for (int epoch = 0; epoch < 5; epoch++) {
+            Tensor<Double> output = model.forward(input);
+            double loss = LossFunction.crossEntropyLoss(output, label).item();
 
-            Tensor<Double> gradient = out.sub(wanted).mul(2.0);
+            if (lastLoss > loss) {
+                System.out.println("Loss has decreased: " + loss + " (by " + (lastLoss - loss) + ")");
+            } else {
+                System.out.println("Loss has increased: " + loss + " (by " + (loss - lastLoss) + ")");
+            }
+            lastLoss = loss;
 
-            model.backward(gradient, 0.00001, 0.001);
+            model.backward(
+                    output.sub(label).mul(2.0), // calculate gradient
+                    1e-1,                              // learning rate
+                    1e-3                               // weight decay
+            );
         }
-
-        model.export("model.mdl");
     }
 }

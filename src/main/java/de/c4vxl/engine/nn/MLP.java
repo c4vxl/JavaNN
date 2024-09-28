@@ -32,7 +32,7 @@ public class MLP extends Module {
         for (Linear layer : hiddenLayers)
             x = Activation.ReLU(layer.forward(x));
 
-        return Activation.ReLU(out_proj.forward(x));
+        return Activation.Softmax(out_proj.forward(x));
     }
 
     /**
@@ -40,14 +40,15 @@ public class MLP extends Module {
      */
     @SuppressWarnings("unchecked")
     public void backward(Tensor<Double> grad, double lr, double wd) {
-        grad = out_proj.backward(grad, lr, wd);
+        Tensor<Double> gradient = out_proj.backward(grad, lr, wd);
 
         ArrayList<Linear> layersCopy = (ArrayList<Linear>) hiddenLayers.clone();
         Collections.reverse(layersCopy);
         for (Linear layer : layersCopy) {
-            grad = layer.backward(grad, lr, wd);
+            gradient = layer.backward(gradient, lr, wd);
         }
+        this.hiddenLayers = layersCopy;
 
-        inp_proj.backward(grad, lr, wd);
+        inp_proj.backward(gradient, lr, wd);
     }
 }
