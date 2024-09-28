@@ -8,7 +8,7 @@ public class LossFunction {
 
     // Cross-Entropy Loss
     public static Tensor<Double> crossEntropyLoss(Tensor<Double> prediction, Tensor<Double> label) {
-        prediction = prediction.softmax();
+        prediction = Activation.Softmax(prediction);
 
         // clip to avoid log(0)
         Tensor<Double> clippedPredictions = prediction.clip(1e-9, 1 - 1e-9);
@@ -18,6 +18,6 @@ public class LossFunction {
         Tensor<Double> elementWiseLoss = label.mul(logPredictions).mul(-1.0);
 
         // sum the loss over the last axis (typically axis=1 for multi-class problems)
-        return elementWiseLoss.sum(1);  // sum over the class dimension
+        return elementWiseLoss.sum(0);  // sum over the class dimension
     }
 }
