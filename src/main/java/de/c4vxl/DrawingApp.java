@@ -1,6 +1,5 @@
 package de.c4vxl;
 
-import de.c4vxl.engine.data.Activation;
 import de.c4vxl.engine.data.Tensor;
 import de.c4vxl.engine.nn.MLP;
 
@@ -90,11 +89,7 @@ public class DrawingApp extends JFrame {
         saveCanvasToFile(pixels.data, "last_prompt.png");
 
         // make prediction
-        Tensor<Double> prediction = Activation.Softmax(this.model.forward(pixels)); // using softmax since we are displaying a probability distribution
-
-        // logging
-        System.out.println("\nInput: " + pixels);
-        System.out.println("Prediction: " + prediction + "\n");
+        Tensor<Double> prediction = this.model.forward(pixels);
 
         displayProbabilities(prediction.data);
     }
@@ -157,7 +152,7 @@ public class DrawingApp extends JFrame {
 
     public static void main(String[] args) {
         new DrawingApp(
-                (MLP) new MLP(784, 10, 3, 16)
+                (MLP) new MLP(784, 10, 2, 12)
                         .load("models/digitRecognition.mdl")
         );
     }

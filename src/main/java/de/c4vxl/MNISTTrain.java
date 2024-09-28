@@ -33,8 +33,8 @@ public class MNISTTrain {
         MLP model = (MLP) new MLP(
                 784,  // dataset contains 28*28 pixel images (= 784)
                 10,         // 10 outputs (0-9)
-                3,          // amount of hidden layers
-                16          // size of hidden layers
+                2,          // amount of hidden layers
+                12          // size of hidden layers
         ).load("models/digitRecognition.mdl"); // load from model file
 
         for (int epoch = 0; epoch < N_EPOCHS; epoch++) {

@@ -26,10 +26,10 @@ The goal of this project was to create a neural network, capable of identifying 
 ##### The model consists of:
 - 784 inputs (for 28*28 pixels)
 - 10 outputs (Numbers from 0-9)
-- 3 hidden layers
-- 16 neurons per hidden layer
+- 2 hidden layers
+- 12 neurons per hidden layer
 
-This adds up to a total of `842 neurons` in the entire model.
+This adds up to a total of `818 neurons` in the entire model.
 
 ##### Dataset:
 It has been trained on the train split of the [MNIST Dataset](https://yann.lecun.com/exdb/mnist/) (600000 images) 

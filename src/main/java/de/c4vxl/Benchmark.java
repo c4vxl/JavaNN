@@ -14,7 +14,7 @@ public class Benchmark {
         ArrayList<ArrayList<Tensor<Double>>> dataset = loadMNIST("test");
 
         // initialize model
-        MLP model = (MLP) new MLP(784, 10, 3,16)
+        MLP model = (MLP) new MLP(784, 10, 2, 12)
                 .load("models/digitRecognition.mdl"); // load from model file
 
         int correct = 0;

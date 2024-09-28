@@ -80,7 +80,7 @@ public class Testing extends JFrame {
 
     public static void main(String[] args) {
         new Testing(
-                (MLP) new MLP(784, 10, 3, 16)
+                (MLP) new MLP(784, 10, 2, 12)
                         .load("models/digitRecognition.mdl")
         );
     }
