@@ -18,6 +18,6 @@ public class LossFunction {
         Tensor<Double> elementWiseLoss = label.mul(logPredictions).mul(-1.0);
 
         // sum the loss over the last axis (typically axis=1 for multi-class problems)
-        return elementWiseLoss.sum(0);  // sum over the class dimension
+        return elementWiseLoss.sum(1);  // sum over the class dimension
     }
 }
