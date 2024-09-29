@@ -9,6 +9,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class MNISTTrain {
@@ -53,6 +54,10 @@ public class MNISTTrain {
                 Tensor<Double> gradient = prediction.sub(label).mul(2.0); // p_i - y_i
                 model.backward(gradient, LEARNING_RATE, WEIGHT_DECAY);
             }
+
+            // shuffle batches
+            Collections.shuffle(train_split);
+
             train_loss /= train_split.size();
 
             // logging
