@@ -3,22 +3,22 @@ package de.c4vxl;
 import de.c4vxl.engine.data.Activation;
 import de.c4vxl.engine.data.Tensor;
 import de.c4vxl.engine.nn.MLP;
+import de.c4vxl.training.Datasets;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
 import java.util.stream.IntStream;
-
-import static de.c4vxl.MNISTTrain.loadMNIST;
 
 public class Testing extends JFrame {
     private final int width = 28, height = 28;
     private final JPanel probDisplay = new JPanel();
     private MLP model;
-    private final ArrayList<ArrayList<Tensor<Double>>> dataset = loadMNIST("test");
+    private final List<ArrayList<Tensor<Double>>> dataset = Datasets.MNIST("test");
     private final JLabel imageLabel = new JLabel();
 
     public Testing(MLP model) {

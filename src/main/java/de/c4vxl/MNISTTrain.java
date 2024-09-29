@@ -3,12 +3,9 @@ package de.c4vxl;
 import de.c4vxl.engine.data.LossFunction;
 import de.c4vxl.engine.data.Tensor;
 import de.c4vxl.engine.nn.MLP;
+import de.c4vxl.training.Datasets;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -23,8 +20,8 @@ public class MNISTTrain {
 
         // load dataset
         System.out.println("Loading dataset...");
-        List<ArrayList<Tensor<Double>>> train_split = loadMNIST("train");
-        List<ArrayList<Tensor<Double>>> test_split = loadMNIST("test");
+        List<ArrayList<Tensor<Double>>> train_split = Datasets.MNIST("train");
+        List<ArrayList<Tensor<Double>>> test_split = Datasets.MNIST("test");
         train_split = train_split.subList(0, Math.max(train_split.size() / 50, 0)); // only use the first fifth of the actual dataset for testing
         System.out.println("Train split size: " + train_split.size());
         System.out.println("Test split size: " + test_split.size());
@@ -85,37 +82,5 @@ public class MNISTTrain {
 
         // save final model
         model.export("models/digitRecognition.mdl");
-    }
-
-    public static ArrayList<ArrayList<Tensor<Double>>> loadMNIST(String split) {
-        try {
-            String[] file = Files.readString(Path.of("dataset/mnist_" + split + ".csv")).split("\n");
-
-            ArrayList<ArrayList<Tensor<Double>>> dataset = new ArrayList<>();
-
-            // start at 1 because we want to skip the first line (with the labels of the rows)
-            for (int i = 1; i < file.length; i++) {
-                String line = file[i];
-                String[] entries = line.split(",");
-
-                // get label
-                Tensor<Double> label = Tensor.of(0.0, 1, 10);
-                label.data[Integer.parseInt(entries[0])] = 1.0;
-
-                Double[] data = Arrays.stream(Arrays.copyOfRange(entries, 1, entries.length))
-                        .map(Double::valueOf)
-                        .toArray(Double[]::new);;
-                Tensor<Double> features = new Tensor<>(data, 1, data.length);
-
-                dataset.add(new ArrayList<>() {{
-                    add(features);
-                    add(label);
-                }});
-            }
-
-            return dataset;
-        } catch (IOException e) {
-            return new ArrayList<>();
-        }
     }
 }

@@ -2,16 +2,17 @@ package de.c4vxl;
 
 import de.c4vxl.engine.data.Tensor;
 import de.c4vxl.engine.nn.MLP;
+import de.c4vxl.training.Datasets;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
-import static de.c4vxl.MNISTTrain.loadMNIST;
 
 public class Benchmark {
     public static void main(String[] args) {
         // load dataset
-        ArrayList<ArrayList<Tensor<Double>>> dataset = loadMNIST("test");
+        List<ArrayList<Tensor<Double>>> dataset = Datasets.MNIST("test");
 
         // initialize model
         MLP model = (MLP) new MLP(784, 10, 2, 12)
