@@ -1,4 +1,4 @@
-package de.c4vxl.training;
+package de.c4vxl.engine.training;
 
 import de.c4vxl.engine.data.Tensor;
 

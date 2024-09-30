@@ -19,3 +19,12 @@ dependencies {
 tasks.test {
     useJUnitPlatform()
 }
+
+tasks.jar {
+    manifest {
+        attributes["Main-Class"] = "de.c4vxl.app.App"
+    }
+
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    from(configurations.runtimeClasspath.get().filter { it.name != "module-info.class" }.map { if (it.isDirectory) it else zipTree(it) })
+}

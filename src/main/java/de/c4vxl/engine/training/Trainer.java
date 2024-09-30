@@ -1,4 +1,4 @@
-package de.c4vxl.training;
+package de.c4vxl.engine.training;
 
 import de.c4vxl.engine.data.LossFunction;
 import de.c4vxl.engine.data.Tensor;
@@ -11,8 +11,8 @@ import java.util.List;
 
 public class Trainer {
     @FunctionalInterface
-    public interface LoggingFunction<T, U, V> {
-        void apply(T t, U u, V v);
+    public interface LoggingFunction<T, U, V, R> {
+        R apply(T t, U u, V v);
     }
 
     @SuppressWarnings("unchecked")
@@ -42,6 +42,8 @@ public class Trainer {
                         System.out.println("Epoch: " + epoch + "/" + N_EPOCHS + "; Train loss: " + train_loss + "; Val loss: " + val_loss);
                     else
                         System.out.println("Epoch: " + epoch + "/" + N_EPOCHS + "; Train loss: " + train_loss);
+
+                    return false;
                 });
     }
 
@@ -56,7 +58,7 @@ public class Trainer {
             double WEIGHT_DECAY,
             boolean shuffle_batches,
             String lossFunction,
-            LoggingFunction<Integer, Double, Double> onLogging) {
+            LoggingFunction<Integer, Double, Double, Boolean> onLogging) {
         // log
         System.out.println("Starting training... \n  - Train split size: " + train_split.size() + "\n  - Test split size: " + test_split.size());
 
@@ -102,10 +104,13 @@ public class Trainer {
                     }
                     val_loss /= test_split.size();
 
-                    onLogging.apply(epoch, train_loss, val_loss);
+
+                    if (!onLogging.apply(epoch, train_loss, val_loss))
+                        break;
                 }
                 else
-                    onLogging.apply(epoch, train_loss, null);
+                    if (!onLogging.apply(epoch, train_loss, null))
+                        break;
             }
         }
 
