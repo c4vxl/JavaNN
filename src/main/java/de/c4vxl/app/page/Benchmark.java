@@ -5,7 +5,10 @@ import de.c4vxl.engine.data.Tensor;
 import de.c4vxl.engine.training.Datasets;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
+import java.io.File;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -57,33 +60,51 @@ public class Benchmark extends JFrame {
     }
 
     private void start(JTextArea output, App parentApp, JLabel finalOut) {
-        List<ArrayList<Tensor<Double>>> dataset = Datasets.MNIST("test");
+        try {
+            JFileChooser chooser = new JFileChooser(Train.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
+            chooser.setFileFilter(new FileNameExtensionFilter(".csv", "csv"));
+            chooser.showOpenDialog(this);
+            File datasetFile = chooser.getSelectedFile();
+            if (datasetFile == null) {
+                this.setVisible(false);
+                parentApp.setVisible(true);
+                return;
+            }
 
-        int correct = 0;
-        for (ArrayList<Tensor<Double>> batch : dataset) {
-            // get label and features
-            Tensor<Double> label = batch.get(1);
-            int wanted = Arrays.stream(label.data).toList().indexOf(label.max());
-            Tensor<Double> features = batch.get(0);
+            new Thread(() -> {
+                output.append("Loading dataset... \n");
+                output.updateUI();
+                List<ArrayList<Tensor<Double>>> dataset = Datasets.loadClassificationDataset(datasetFile.getPath());
 
-            // make prediction
-            Tensor<Double> y_pred = parentApp.model.forward(features);
-            int predicted = Arrays.stream(y_pred.data).toList().indexOf(y_pred.max());
+                int correct = 0;
+                for (ArrayList<Tensor<Double>> batch : dataset) {
+                    // get label and features
+                    Tensor<Double> label = batch.get(1);
+                    int wanted = Arrays.stream(label.data).toList().indexOf(label.max());
+                    Tensor<Double> features = batch.get(0);
 
-            // logging
-            output.append("Predicted: " + predicted + " \t Wanted: " + wanted + "\n");
-            output.updateUI();
+                    // make prediction
+                    Tensor<Double> y_pred = parentApp.model.forward(features);
+                    int predicted = Arrays.stream(y_pred.data).toList().indexOf(y_pred.max());
 
-            if (predicted == wanted)
-                correct++;
+                    // logging
+                    output.append("Predicted: " + predicted + " \t Wanted: " + wanted + "\n");
+                    output.updateUI();
+
+                    if (predicted == wanted)
+                        correct++;
+                }
+
+                double perc = ((double) correct / dataset.size()) * 100;
+
+                output.append("Guessed " + correct + " correct of " + dataset.size() + " images! (" + perc + "%)");
+                output.updateUI();
+
+                finalOut.setText("(" + perc + "%)");
+                finalOut.updateUI();
+            }).start();
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
         }
-
-        double perc = ((double) correct / dataset.size()) * 100;
-
-        output.append("Guessed " + correct + " correct of " + dataset.size() + " images! (" + perc + "%)");
-        output.updateUI();
-
-        finalOut.setText("(" + perc + "%)");
-        finalOut.updateUI();
     }
 }
