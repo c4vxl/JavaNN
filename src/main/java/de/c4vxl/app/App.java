@@ -84,7 +84,7 @@ public class App extends JFrame {
         title.setForeground(Color.WHITE);
         title.setFont(new Font("Inter", Font.ITALIC, 25));
         titlePanel.add(title);
-        JLabel subtitle = new JLabel("- by c4vxl");
+        JLabel subtitle = new JLabel("- v1.0");
         subtitle.setForeground(Color.WHITE);
         subtitle.setFont(new Font("Inter", Font.ITALIC, 15));
         titlePanel.add(subtitle);
