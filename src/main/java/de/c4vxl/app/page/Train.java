@@ -274,8 +274,10 @@ public class Train extends JFrame {
                         consoleOutput.append("Epoch: " + epoch + "/" + n_epochs + "; Train loss: " + train_loss + "\n");
 
                     // clear console when stopping
-                    if (!isRunning)
+                    if (!isRunning) {
                         consoleOutput.setText("");
+                        startButton.setText("Start training");
+                    }
 
                     return isRunning;
                 }
