@@ -37,7 +37,6 @@ public class Benchmark extends JFrame {
         gbc.insets = new Insets(20, 0, 0, 0);
         JTextArea output = new JTextArea();
         output.setLayout(new BoxLayout(output, BoxLayout.Y_AXIS));
-        App.setSize(output, 250, 300);
         output.setLineWrap(true);
         panel.add(output, gbc);
 

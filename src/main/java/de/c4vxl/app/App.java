@@ -16,7 +16,7 @@ import java.util.Objects;
 public class App extends JFrame {
     public static Color background = new Color(32, 30, 30);
 
-    public MLP model = (MLP) new MLP(784, 10, 2, 16).load("models/digitRecognition.mdl");
+    public MLP model;
 
     // pages
     public Prediction prediction_page = new Prediction(this);
@@ -68,7 +68,12 @@ public class App extends JFrame {
 
     public static ImageIcon icon = new ImageIcon(Objects.requireNonNull(App.class.getClassLoader().getResource("app/home/logo.png")));
 
-    public App() {
+    public App(String modelPath) {
+        this.model = (MLP) new MLP(784, 10, 2, 16).load(modelPath);
+
+        String[] modelPathParts = modelPath.split("/");
+        String modelName = modelPathParts[modelPathParts.length - 1];
+
         this.setTitle("JavaNN");
         this.setSize(650, 370);
         this.getContentPane().setBackground(background);
@@ -84,7 +89,7 @@ public class App extends JFrame {
         title.setForeground(Color.WHITE);
         title.setFont(new Font("Inter", Font.ITALIC, 25));
         titlePanel.add(title);
-        JLabel subtitle = new JLabel("- v1.0");
+        JLabel subtitle = new JLabel("- v1.0 - " + modelName);
         subtitle.setForeground(Color.WHITE);
         subtitle.setFont(new Font("Inter", Font.ITALIC, 15));
         titlePanel.add(subtitle);
@@ -125,6 +130,10 @@ public class App extends JFrame {
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(App::new);
+        SwingUtilities.invokeLater(() -> {
+            String model = JOptionPane.showInputDialog(null, "Select a model file:", "model.mdl");
+            model = model == null ? "model.mdl" : model;
+            new App(model);
+        });
     }
 }
