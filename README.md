@@ -5,6 +5,8 @@ This led to the development of a nn engine, which I plan on expanding [here](htt
 
 ---
 
+![](https://github.com/c4vxl/JavaNN/blob/8211c26f40486c436f25ee3f19c65687bc01eae0/src/main/resources/app/home/logo.png)
+
 ## About
 ### The Engine:
 The core engine introduces a new data type called Tensor, which can be thought of as a multidimensional matrix supporting various data types. It is capable of performing a wide range of mathematical operations, including element-wise computation, matrix multiplication, reshaping, transposing, and more.
