@@ -59,7 +59,7 @@ public class Train extends JFrame {
 
         gbc.gridy = 1;
         gbc.insets = new Insets(2, 0, 0, 0);
-        JButton selectDatasetButton = App.createButton("⚙ Change configuration");
+        JButton selectDatasetButton = App.createButton("Change configuration");
         App.setSize(selectDatasetButton, 600, 50);
         selectDatasetButton.addActionListener(e -> openConfig());
         panel.add(selectDatasetButton, gbc);
