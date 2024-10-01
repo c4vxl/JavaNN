@@ -14,6 +14,7 @@ import java.awt.event.MouseEvent;
 import java.util.Objects;
 
 public class App extends JFrame {
+    private int initialX, initialY;
     public static Color background = new Color(32, 30, 30);
 
     public MLP model;
@@ -80,6 +81,25 @@ public class App extends JFrame {
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setResizable(false);
         this.setIconImage(icon.getImage());
+
+        // remove toolbar
+        this.setUndecorated(true);
+        this.setLocationRelativeTo(null);
+        addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                initialX = e.getX();
+                initialY = e.getY();
+            }
+        });
+        addMouseMotionListener(new MouseAdapter() {
+            @Override
+            public void mouseDragged(MouseEvent e) {
+                int newX = getLocation().x + e.getX() - initialX;
+                int newY = getLocation().y + e.getY() - initialY;
+                setLocation(newX, newY);
+            }
+        });
 
         // display title
         JPanel titlePanel = new JPanel();
