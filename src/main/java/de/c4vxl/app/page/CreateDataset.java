@@ -15,7 +15,7 @@ import java.util.Collections;
 
 public class CreateDataset extends JFrame {
     private final CanvasPanel canvas = new CanvasPanel();
-    private int picturesPerNumber = 10; // let the user draw 10 pictures for each number (0-9)
+    private int picturesPerNumber = 15; // let the user draw 15 pictures for each number (0-9)
     private JLabel label = new JLabel("Draw a 0 (1/" + picturesPerNumber + ")");
     private int currentImage = 0;
     private JButton nextButton = App.createButton("Next");

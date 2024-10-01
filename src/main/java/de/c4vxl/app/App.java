@@ -122,6 +122,7 @@ public class App extends JFrame {
         JLabel subtitle = new JLabel("- v1.0 - " + modelName);
         subtitle.setForeground(Color.WHITE);
         subtitle.setFont(new Font("Inter", Font.ITALIC, 15));
+        subtitle.setToolTipText(modelPath);
         titlePanel.add(subtitle);
 
         // display buttons
