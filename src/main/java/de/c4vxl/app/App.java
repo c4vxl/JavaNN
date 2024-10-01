@@ -11,11 +11,21 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
+import java.net.URISyntaxException;
 import java.util.Objects;
 
 public class App extends JFrame {
     private int initialX, initialY;
     public static Color background = new Color(32, 30, 30);
+
+    public static String getRunPath() {
+        try {
+            return new File(App.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParentFile().getPath();
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     public MLP model;
 
@@ -153,7 +163,7 @@ public class App extends JFrame {
         SwingUtilities.invokeLater(() -> {
             String model = JOptionPane.showInputDialog(null, "Select a model file:", "model.mdl");
             model = model == null ? "model.mdl" : model;
-            new App(model);
+            new App(new File(App.getRunPath(), model).getPath());
         });
     }
 }

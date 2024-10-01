@@ -9,13 +9,12 @@ import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.io.File;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Train extends JFrame {
     private App parent;
-    private File datasetPath = new File("finetune.csv");
+    private File datasetPath = new File(App.getRunPath(), "finetune.csv");
     private int n_epochs = 100;
     private int n_logging = 3;
     private int n_val = 5;
@@ -106,20 +105,16 @@ public class Train extends JFrame {
         JButton datasetBtn = App.createButton("Select dataset");
         App.setSize(datasetBtn, 340, 40);
         datasetBtn.addActionListener(e -> {
-            try {
-                JFileChooser chooser = new JFileChooser(Train.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
-                chooser.setFileFilter(new FileNameExtensionFilter(".csv", "csv"));
-                chooser.showOpenDialog(frame);
+            JFileChooser chooser = new JFileChooser(App.getRunPath());
+            chooser.setFileFilter(new FileNameExtensionFilter(".csv", "csv"));
+            chooser.showOpenDialog(frame);
 
-                datasetPath = chooser.getSelectedFile();
+            datasetPath = chooser.getSelectedFile();
 
-                if (datasetPath != null)
-                    datasetBtn.setText(datasetPath.getName());
-                else
-                    datasetBtn.setText("Select dataset");
-            } catch (URISyntaxException ex) {
-                throw new RuntimeException(ex);
-            }
+            if (datasetPath != null)
+                datasetBtn.setText(datasetPath.getName());
+            else
+                datasetBtn.setText("Select dataset");
         });
         frame.add(datasetBtn, gbc);
 
@@ -281,6 +276,6 @@ public class Train extends JFrame {
 
                     return isRunning;
                 }
-        ).export(exportPath)).start();
+        ).export(new File(App.getRunPath(), exportPath).getPath())).start();
     }
 }

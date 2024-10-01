@@ -127,12 +127,15 @@ public class CreateDataset extends JFrame {
 
         // save dataset
         try {
-            File outputFile = new File(JOptionPane.showInputDialog("Path to save:", "finetune.csv"));
+            File outputFile = new File(App.getRunPath(), JOptionPane.showInputDialog("Path to save:", "finetune.csv"));
             outputFile.createNewFile();
 
             PrintWriter writer = new PrintWriter(new FileWriter(outputFile.getPath()));
             writer.print(fileContent);
             writer.close();
+
+            // open file-explorer
+            Desktop.getDesktop().open(outputFile.getParentFile());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
