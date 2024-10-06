@@ -12,6 +12,8 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
+import java.io.IOException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Objects;
 
@@ -141,6 +143,25 @@ public class App extends JFrame {
         this.setLayout(new BorderLayout());
         this.add(titlePanel, BorderLayout.NORTH);
         this.add(buttonPanel, BorderLayout.CENTER);
+
+        JPanel linksPanel = new JPanel();
+        linksPanel.setBackground(background);
+
+        JButton githubBtn = new JButton();
+        githubBtn.setFocusPainted(false);
+        githubBtn.setBorderPainted(false);
+        githubBtn.setBackground(background);
+        githubBtn.setIcon(new ImageIcon(Objects.requireNonNull(getClass().getClassLoader().getResource("app/home/github.png"))));
+        githubBtn.addActionListener((e) -> {
+            try {
+                Desktop.getDesktop().browse(URI.create("https://github.com/c4vxl/JavaNN/"));
+            } catch (IOException ignored) {}
+        });
+        setSize(githubBtn, 60, 60);
+        linksPanel.add(githubBtn);
+
+        linksPanel.setBorder(new EmptyBorder(0, 0, 0, 570));
+        this.add(linksPanel, BorderLayout.PAGE_END);
 
         this.setVisible(true);
     }
