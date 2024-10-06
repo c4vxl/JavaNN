@@ -88,7 +88,7 @@ public class App extends JFrame {
         String modelName = modelPathParts[modelPathParts.length - 1];
 
         this.setTitle("JavaNN");
-        this.setSize(650, 370);
+        this.setSize(650, 360);
         this.getContentPane().setBackground(background);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setResizable(false);
@@ -115,7 +115,7 @@ public class App extends JFrame {
 
         // display title
         JPanel titlePanel = new JPanel();
-        titlePanel.setBorder(new EmptyBorder(40, 0, 0, 320));
+        titlePanel.setBorder(new EmptyBorder(40, 0, 45, 320));
         titlePanel.setBackground(background);
         JLabel title = new JLabel("JavaNN");
         title.setForeground(Color.WHITE);
@@ -157,10 +157,10 @@ public class App extends JFrame {
                 Desktop.getDesktop().browse(URI.create("https://github.com/c4vxl/JavaNN/"));
             } catch (IOException ignored) {}
         });
-        setSize(githubBtn, 60, 60);
+        setSize(githubBtn, 40, 40);
         linksPanel.add(githubBtn);
 
-        linksPanel.setBorder(new EmptyBorder(0, 0, 0, 570));
+        linksPanel.setBorder(new EmptyBorder(0, 0, 0, 590));
         this.add(linksPanel, BorderLayout.PAGE_END);
 
         this.setVisible(true);
