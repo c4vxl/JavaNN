@@ -125,6 +125,9 @@ public class CreateDataset extends JFrame {
     }
 
     private void finish() {
+        this.currentImage = 0;
+        this.canvas.clear();
+
         // read lines
         ArrayList<String> lines = new ArrayList<>();
         for (int i = 0; i < dataset.size(); i++) {
