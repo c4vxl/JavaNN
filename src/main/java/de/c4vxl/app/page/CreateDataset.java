@@ -50,8 +50,9 @@ public class CreateDataset extends JFrame {
             sizeButton.setText("Images per digit: " + picturesPerNumber);
 
             // redraw
-            currentImage--;
+            currentImage = -2;
             next();
+            dataset.clear();
         });
 
         // redraw button
@@ -104,6 +105,10 @@ public class CreateDataset extends JFrame {
 
     private void next() {
         currentImage++;
+
+        // handle finish
+        if (currentImage >= picturesPerNumber * 10)
+            finish();
 
         // update label
         int current = currentImage / picturesPerNumber;
