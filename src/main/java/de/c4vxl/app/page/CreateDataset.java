@@ -50,7 +50,7 @@ public class CreateDataset extends JFrame {
             sizeButton.setText("Images per digit: " + picturesPerNumber);
 
             // redraw
-            currentImage = -2;
+            currentImage = -1;
             next();
             dataset.clear();
         });
