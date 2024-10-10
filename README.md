@@ -1,11 +1,13 @@
-![](https://github.com/c4vxl/JavaNN/blob/main/src/main/resources/app/home/title.png)
+![](src/main/resources/app/home/title.png)
 
 I need to build a project for school in Java, and I challenged myself to building a Neural Network from scratch. 
 This led to the development of a nn engine, which I plan on expanding [here](https://github.com/c4vxl/jNN) in the future
 
 ---
 
-![](https://github.com/c4vxl/JavaNN/blob/8211c26f40486c436f25ee3f19c65687bc01eae0/src/main/resources/app/home/logo.png)
+<p align="center">
+    <img src="src/main/resources/app/home/logo.png">
+</p>
 
 ## About
 ### The Engine:
@@ -35,6 +37,45 @@ This adds up to a total of `818 neurons` in the entire model.
 
 ##### Dataset:
 It has been trained on the train split of the [MNIST Dataset](https://yann.lecun.com/exdb/mnist/) (600000 images) 
+
+---
+
+## Insights
+
+<details open>
+  <summary><strong>Main app</strong></summary>
+
+  ![](.preview_images/main.png)
+</details>
+
+<details open>
+  <summary><strong>Prompt the model</strong></summary>
+
+  ![](.preview_images/predict.png)
+</details>
+
+<details open>
+  <summary><strong>Creating a dataset for training</strong></summary>
+
+  ![](.preview_images/create_dataset.png)
+</details>
+
+<details open>
+  <summary><strong>Benchmarking on a dataset</strong></summary>
+
+![](.preview_images/benchmark.png)
+</details>
+
+<details open>
+  <summary><strong>Training</strong></summary>
+  
+  ## Training Menu
+  ![](.preview_images/training_main.png)
+
+  ## Configuration of training
+  ![](.preview_images/training_config.png)
+</details>
+
 
 # Licence
 It's mine, don't copy!
