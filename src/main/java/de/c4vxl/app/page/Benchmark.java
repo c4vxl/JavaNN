@@ -87,11 +87,12 @@ public class Benchmark extends JFrame {
 
                 // logging
                 output.append("Predicted: " + predicted + " \t Wanted: " + wanted + "\n");
-                output.updateUI();
 
                 if (predicted == wanted)
                     correct++;
             }
+
+            output.updateUI();
 
             double perc = ((double) correct / dataset.size()) * 100;
 
