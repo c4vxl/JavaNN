@@ -15,7 +15,7 @@ import java.util.Collections;
 
 public class CreateDataset extends JFrame {
     private final CanvasPanel canvas = new CanvasPanel();
-    private int picturesPerNumber = 15; // let the user draw 15 pictures for each number (0-9)
+    private int picturesPerNumber = 20; // let the user draw 20 pictures for each number (0-9)
     private JLabel label = new JLabel("Draw a 0 (1/" + picturesPerNumber + ")");
     private int currentImage = 0;
     private JButton nextButton = App.createButton("Next");
@@ -40,6 +40,20 @@ public class CreateDataset extends JFrame {
             parentApp.setVisible(true);
         });
 
+        // change size button
+        JButton sizeButton = App.createButton("Images per digit: " + picturesPerNumber);
+        sizeButton.addActionListener(e -> {
+            String input = JOptionPane.showInputDialog(null, "Select a value (integer)", picturesPerNumber);
+            try {
+                picturesPerNumber = Integer.parseInt(input);
+            } catch (Exception ignored) {return;}
+            sizeButton.setText("Images per digit: " + picturesPerNumber);
+
+            // redraw
+            currentImage--;
+            next();
+        });
+
         // redraw button
         JButton redrawButton = App.createButton("Redraw");
         redrawButton.addActionListener(e -> {
@@ -56,14 +70,19 @@ public class CreateDataset extends JFrame {
         gbc.anchor = GridBagConstraints.NORTH;
 
         panel.add(homeButton, gbc);
+        gbc.gridy = 2;
+        gbc.insets = new Insets(2, 0, 0, 0);
+        panel.add(sizeButton, gbc);
 
-        gbc.gridy = 1;
-        gbc.insets = new Insets(20, 0, 0, 0);
+        gbc.insets = new Insets(15, 0, 0, 0);
+
+        gbc.gridy = 3;
         label.setForeground(Color.WHITE);
         panel.add(label, gbc);
 
         gbc.insets = new Insets(20, 0, 0, 0);
-        gbc.gridy = 2;
+
+        gbc.gridy = 4;
         panel.add(canvas, gbc);
 
         this.add(panel, BorderLayout.PAGE_START);
