@@ -167,6 +167,12 @@ public class App extends JFrame {
     }
 
     private void open(String name) {
+        // update location of all apps
+        prediction_page.setLocation(this.getX(), this.getY());
+        dataset_page.setLocation(this.getX(), this.getY());
+        benchmark_page.setLocation(this.getX(), this.getY());
+        train_page.setLocation(this.getX(), this.getY());
+
         this.setVisible(false);
 
         if (name.equalsIgnoreCase("predict"))
