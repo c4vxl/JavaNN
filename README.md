@@ -42,31 +42,31 @@ It has been trained on the train split of the [MNIST Dataset](https://yann.lecun
 
 ## Insights
 
-<details open>
+<details>
   <summary><strong>Main app</strong></summary>
 
   ![](.preview_images/main.png)
 </details>
 
-<details open>
+<details>
   <summary><strong>Prompt the model</strong></summary>
 
   ![](.preview_images/predict.png)
 </details>
 
-<details open>
+<details>
   <summary><strong>Creating a dataset for training</strong></summary>
 
   ![](.preview_images/create_dataset.png)
 </details>
 
-<details open>
+<details>
   <summary><strong>Benchmarking on a dataset</strong></summary>
 
 ![](.preview_images/benchmark.png)
 </details>
 
-<details open>
+<details>
   <summary><strong>Training</strong></summary>
   
   ## Training Menu
