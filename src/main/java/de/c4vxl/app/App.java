@@ -1,9 +1,6 @@
 package de.c4vxl.app;
 
-import de.c4vxl.app.page.Benchmark;
-import de.c4vxl.app.page.CreateDataset;
-import de.c4vxl.app.page.Prediction;
-import de.c4vxl.app.page.Train;
+import de.c4vxl.app.page.*;
 import de.c4vxl.engine.nn.MLP;
 
 import javax.swing.*;
@@ -36,6 +33,7 @@ public class App extends JFrame {
     public CreateDataset dataset_page = new CreateDataset(this);
     public Benchmark benchmark_page = new Benchmark(this);
     public Train train_page = new Train(this);
+    public Inspector inspector_page = new Inspector(this);
 
     private JButton pageButton(String name) {
         JButton button = new JButton(new ImageIcon(Objects.requireNonNull(getClass().getClassLoader().getResource("app/home/" + name + ".png"))));
@@ -88,7 +86,7 @@ public class App extends JFrame {
         String modelName = modelPathParts[modelPathParts.length - 1];
 
         this.setTitle("JavaNN");
-        this.setSize(650, 360);
+        this.setSize(700, 360);
         this.getContentPane().setBackground(background);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setResizable(false);
@@ -115,7 +113,7 @@ public class App extends JFrame {
 
         // display title
         JPanel titlePanel = new JPanel();
-        titlePanel.setBorder(new EmptyBorder(40, 0, 45, 320));
+        titlePanel.setBorder(new EmptyBorder(40, 0, 45, 0));
         titlePanel.setBackground(background);
         JLabel title = new JLabel("JavaNN");
         title.setForeground(Color.WHITE);
@@ -139,6 +137,7 @@ public class App extends JFrame {
         buttonPanel.add(pageButton("create_dataset"), gbc);
         buttonPanel.add(pageButton("benchmark"), gbc);
         buttonPanel.add(pageButton("train"), gbc);
+        buttonPanel.add(pageButton("inspect"), gbc);
 
         this.setLayout(new BorderLayout());
         this.add(titlePanel, BorderLayout.NORTH);
@@ -160,7 +159,7 @@ public class App extends JFrame {
         setSize(githubBtn, 40, 40);
         linksPanel.add(githubBtn);
 
-        linksPanel.setBorder(new EmptyBorder(0, 0, 0, 590));
+        linksPanel.setBorder(new EmptyBorder(0, 0, 0, 640));
         this.add(linksPanel, BorderLayout.PAGE_END);
 
         this.setVisible(true);
@@ -172,6 +171,7 @@ public class App extends JFrame {
         dataset_page.setLocation(this.getX(), this.getY());
         benchmark_page.setLocation(this.getX(), this.getY());
         train_page.setLocation(this.getX(), this.getY());
+        inspector_page.setLocation(this.getX(), this.getY());
 
         this.setVisible(false);
 
@@ -183,6 +183,8 @@ public class App extends JFrame {
             benchmark_page.setVisible(true);
         else if (name.equalsIgnoreCase("train"))
             train_page.setVisible(true);
+        else if (name.equalsIgnoreCase("inspect"))
+            inspector_page.setVisible(true);
         else
             this.setVisible(true);
     }

@@ -68,12 +68,18 @@ It has been trained on the train split of the [MNIST Dataset](https://yann.lecun
 
 <details>
   <summary><strong>Training</strong></summary>
-  
+
   ## Training Menu
   ![](.preview_images/training_main.png)
 
   ## Configuration of training
   ![](.preview_images/training_config.png)
+</details>
+
+<details>
+  <summary><strong>Dataset inspector</strong></summary>
+
+  ![](.preview_images/inspector.png)
 </details>
 
 
