@@ -212,7 +212,7 @@ public class DatasetDownload extends JFrame {
         // export
         String outputPath = JOptionPane.showInputDialog(this,
                 "Save to: ", "dataset/" + (id + "_" + file).replace("/", "_"));
-        File datasetFile = Datasets.HuggingFaceAPI.downloadDataset(id, file, outputPath);
+        File datasetFile = Datasets.HuggingFaceAPI.downloadDataset(id, file, new File(App.getRunPath(), outputPath).getPath());
 
         // show dataset file
         try {
