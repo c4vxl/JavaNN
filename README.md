@@ -40,52 +40,73 @@ It has been trained on the train split of the [MNIST Dataset](https://yann.lecun
 
 ---
 
-## Insights
+## User App
+![](.preview_images/main.png)
 
+### Predict
+The user can draw a digit on a canvas, and the AI will attempt to predict the digit in real-time.
 <details>
-  <summary><strong>Main app</strong></summary>
+  <summary><strong>Image</strong></summary>
 
-  ![](.preview_images/main.png)
+![](.preview_images/predict.png)
 </details>
 
-<details>
-  <summary><strong>Prompt the model</strong></summary>
+### Create Dataset
+This feature enables users to create a personalized dataset by drawing digits multiple times.
+The generated dataset can be used to fine-tune the model, helping it adapt to the user's handwriting style for improved accuracy.
 
-  ![](.preview_images/predict.png)
+<details>
+  <summary><strong>Image</strong></summary>
+
+![](.preview_images/create_dataset.png)
 </details>
 
-<details>
-  <summary><strong>Creating a dataset for training</strong></summary>
-
-  ![](.preview_images/create_dataset.png)
-</details>
+### Benchmark
+The benchmarking tool allows users to evaluate the model's performance on any dataset of their choice.
 
 <details>
-  <summary><strong>Benchmarking on a dataset</strong></summary>
+  <summary><strong>Image</strong></summary>
 
 ![](.preview_images/benchmark.png)
 </details>
 
+### Train
+Here, users can train their own model using custom parameters. The following training parameters can be configured:
+
+- Shuffle Batches: `Randomizes the order of training samples to improve generalization.`
+- Number of Epochs: `Defines how many times the entire dataset is used for training.`
+- Logging Rate: `Determines how often the training progress is logged.`
+- Validation Rate: `Specifies how often to validate the model's performance on the validation split.`
+- Learning Rate: `Controls how much to adjust the model’s weights during each update.`
+- Weight Decay: `Regularizes the model by penalizing large weights, helping to prevent overfitting.`
+- Loss Function: `Switch between meanSquareLoss or crossEntropyLoss`
+
 <details>
-  <summary><strong>Training</strong></summary>
+  <summary><strong>Image</strong></summary>
 
-  ## Training Menu
-  ![](.preview_images/training_main.png)
+## Training Menu
+![](.preview_images/training_main.png)
 
-  ## Configuration of training
-  ![](.preview_images/training_config.png)
+## Configuration of training
+![](.preview_images/training_config.png)
 </details>
 
-<details>
-  <summary><strong>Dataset inspector</strong></summary>
+### Inspect Dataset
+This feature lets users load and explore any dataset. Each image is displayed alongside its corresponding label.
 
-  ![](.preview_images/inspector.png)
+<details>
+  <summary><strong>Image</strong></summary>
+
+![](.preview_images/inspector.png)
 </details>
 
-<details>
-  <summary><strong>Dataset loader</strong></summary>
+### Downloader
+Users can directly download datasets from Hugging Face through this feature. It provides options to browse available datasets or search for a specific one.
 
-  ![](.preview_images/download.png)
+<details>
+  <summary><strong>Image</strong></summary>
+
+![](.preview_images/download.png)
 </details>
 
 
