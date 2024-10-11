@@ -82,6 +82,12 @@ It has been trained on the train split of the [MNIST Dataset](https://yann.lecun
   ![](.preview_images/inspector.png)
 </details>
 
+<details>
+  <summary><strong>Dataset loader</strong></summary>
+
+  ![](.preview_images/download.png)
+</details>
+
 
 # Licence
 It's mine, don't copy!

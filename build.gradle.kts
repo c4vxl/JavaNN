@@ -11,6 +11,7 @@ repositories {
 
 dependencies {
     implementation("com.thoughtworks.xstream:xstream:1.4.20") // used for saving the module state in a file
+    implementation("com.google.code.gson:gson:2.11.0") // used for parsing the response of the hugging face api
 
     testImplementation(platform("org.junit:junit-bom:5.10.0"))
     testImplementation("org.junit.jupiter:junit-jupiter")

@@ -34,10 +34,11 @@ public class App extends JFrame {
     public Benchmark benchmark_page = new Benchmark(this);
     public Train train_page = new Train(this);
     public Inspector inspector_page = new Inspector(this);
+    public DatasetDownload download_page = new DatasetDownload(this);
 
     private JButton pageButton(String name) {
         JButton button = new JButton(new ImageIcon(Objects.requireNonNull(getClass().getClassLoader().getResource("app/home/" + name + ".png"))));
-        button.setPreferredSize(new Dimension(113, 144));
+        setSize(button, 123, 174);
         button.setBorderPainted(false);
         button.setContentAreaFilled(false);
         button.setFocusPainted(false);
@@ -48,12 +49,18 @@ public class App extends JFrame {
             public void mouseEntered(MouseEvent e) {
                 button.setContentAreaFilled(true);
                 button.setBackground(new Color(57, 53, 53));
+                setSize(button, 140, 190);
+                button.revalidate();
+                button.repaint();
             }
 
             @Override
             public void mouseExited(MouseEvent e) {
                 button.setContentAreaFilled(false);
                 button.setBackground(background);
+                setSize(button, 123, 174);
+                button.revalidate();
+                button.repaint();
             }
         });
 
@@ -86,7 +93,7 @@ public class App extends JFrame {
         String modelName = modelPathParts[modelPathParts.length - 1];
 
         this.setTitle("JavaNN");
-        this.setSize(700, 360);
+        this.setSize(780, 360);
         this.getContentPane().setBackground(background);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setResizable(false);
@@ -131,13 +138,14 @@ public class App extends JFrame {
         buttonPanel.setBackground(background);
 
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(0, 10, 40, 10);
+        gbc.insets = new Insets(0, 0, 40, 0);
 
         buttonPanel.add(pageButton("predict"), gbc);
         buttonPanel.add(pageButton("create_dataset"), gbc);
         buttonPanel.add(pageButton("benchmark"), gbc);
         buttonPanel.add(pageButton("train"), gbc);
         buttonPanel.add(pageButton("inspect"), gbc);
+        buttonPanel.add(pageButton("download"), gbc);
 
         this.setLayout(new BorderLayout());
         this.add(titlePanel, BorderLayout.NORTH);
@@ -159,7 +167,7 @@ public class App extends JFrame {
         setSize(githubBtn, 40, 40);
         linksPanel.add(githubBtn);
 
-        linksPanel.setBorder(new EmptyBorder(0, 0, 0, 640));
+        linksPanel.setBorder(new EmptyBorder(0, 0, 0, 730));
         this.add(linksPanel, BorderLayout.PAGE_END);
 
         this.setVisible(true);
@@ -172,6 +180,7 @@ public class App extends JFrame {
         benchmark_page.setLocation(this.getX(), this.getY());
         train_page.setLocation(this.getX(), this.getY());
         inspector_page.setLocation(this.getX(), this.getY());
+        download_page.setLocation(this.getX(), this.getY());
 
         this.setVisible(false);
 
@@ -185,6 +194,8 @@ public class App extends JFrame {
             train_page.setVisible(true);
         else if (name.equalsIgnoreCase("inspect"))
             inspector_page.setVisible(true);
+        else if (name.equalsIgnoreCase("download"))
+            download_page.setVisible(true);
         else
             this.setVisible(true);
     }
