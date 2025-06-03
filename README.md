@@ -3,6 +3,12 @@
 I need to build a project for school in Java, and I challenged myself to building a Neural Network from scratch. 
 This led to the development of a nn engine, which I plan on expanding [here](https://github.com/c4vxl/jNN) in the future
 
+
+
+# IMPORTANT:
+There's a new and completely reworked version of this project on https://github.com/c4vxl/jNN
+
+
 ---
 
 <p align="center">
